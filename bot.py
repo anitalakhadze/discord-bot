@@ -2,14 +2,29 @@ import os
 
 import discord
 from dotenv import load_dotenv
+from discord.ext import commands
 
 load_dotenv()
+
 TOKEN = os.environ['TOKEN']
+intents = discord.Intents.all()
 
-client = discord.Client(intents=discord.Intents.default())
+bot = commands.Bot(intents=intents, command_prefix='!')
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'{client.user} has connected to Discord!')
+    print('bot ready')
 
-client.run(TOKEN)
+@bot.command()
+async def ping(ctx):
+    print('inside ping')
+    await bot.say('Pong')
+
+@bot.event
+async def on_message(message: discord.message.Message):
+    if message.author == bot.user:
+        return
+
+    await message.channel.send(message.content[::-1])
+
+bot.run(TOKEN)
